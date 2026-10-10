@@ -5,6 +5,10 @@
   const PASSCODE = "88888888";
   const GATE_KEY = "portfolio_unlocked_v1";
   const STORE_KEY = "portfolio_holdings_v1";
+  const PLAN_KEY = "portfolio_ten_year_plan_v1";
+  const PLAN_START = 2026;
+  const PLAN_END = 2035;
+  const PLAN_BASE_2026 = 42;
   const COLORS = ["#3d8bfd", "#00c853", "#ffb300", "#7c5cff"];
   const CN_NAMES = ["沪深A500", "科创A50", "恒生科技"];
 
@@ -38,6 +42,7 @@
     cn: [], // {id, name, cny, example?}
     crypto: [], // {id, symbol, qty, price, example?}
     cash: [], // {id, label, usd, example?}
+    planActuals: {}, // { "2026": number|null, ... }
     usdCny: null,
     btcUsd: null,
     priceMeta: { stocks: "—", fx: "—", btc: "—" },
@@ -406,6 +411,122 @@
       "status-line " + (state.btcUsd ? "ok" : "bad");
   }
 
+
+  /* ---------- Ten-year plan (2026–2035) ---------- */
+  function computeBenchmarks() {
+    const out = [];
+    let amount = PLAN_BASE_2026;
+    for (let y = PLAN_START; y <= PLAN_END; y++) {
+      out.push({ year: y, benchmark: amount });
+      amount = amount * 1.12 + 2;
+    }
+    return out;
+  }
+
+  function loadPlanActuals() {
+    const empty = {};
+    for (let y = PLAN_START; y <= PLAN_END; y++) empty[String(y)] = null;
+    try {
+      const raw = localStorage.getItem(PLAN_KEY);
+      if (!raw) return empty;
+      const parsed = JSON.parse(raw);
+      const map = { ...empty };
+      if (parsed && typeof parsed === "object") {
+        for (let y = PLAN_START; y <= PLAN_END; y++) {
+          const k = String(y);
+          const v = parsed[k];
+          if (v === null || v === undefined || v === "") map[k] = null;
+          else {
+            const n = Number(v);
+            map[k] = Number.isFinite(n) ? n : null;
+          }
+        }
+      }
+      return map;
+    } catch {
+      return empty;
+    }
+  }
+
+  function persistPlan() {
+    const payload = { ...state.planActuals, savedAt: new Date().toISOString() };
+    localStorage.setItem(PLAN_KEY, JSON.stringify(payload));
+  }
+
+  function fmtWan(n) {
+    if (n == null || !Number.isFinite(n)) return "—";
+    return n.toLocaleString("zh-CN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
+  function renderPlan() {
+    if (!state.planActuals) state.planActuals = loadPlanActuals();
+    const rows = computeBenchmarks();
+    const tbody = $("#planTable tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    let filled = 0;
+    for (const { year, benchmark } of rows) {
+      const key = String(year);
+      const actual = state.planActuals[key];
+      const hasActual = actual != null && Number.isFinite(actual);
+      if (hasActual) filled++;
+      const delta = hasActual ? actual - benchmark : null;
+      const progress = hasActual && benchmark > 0 ? (actual / benchmark) * 100 : null;
+      let deltaClass = "delta-zero";
+      let deltaText = "—";
+      if (delta != null) {
+        if (delta > 0.005) deltaClass = "delta-pos";
+        else if (delta < -0.005) deltaClass = "delta-neg";
+        const sign = delta > 0 ? "+" : "";
+        deltaText = sign + fmtWan(delta);
+      }
+      const progText =
+        progress == null
+          ? "—"
+          : progress.toLocaleString("zh-CN", {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            }) + "%";
+      let progClass = "delta-zero";
+      if (progress != null) {
+        if (progress >= 100) progClass = "delta-pos";
+        else if (progress < 100) progClass = "delta-neg";
+      }
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${year}</td>
+        <td class="num">${fmtWan(benchmark)}</td>
+        <td class="num"><input class="plan-actual" data-year="${key}" type="number" min="0" step="0.01" placeholder="填写" value="${
+          hasActual ? escapeAttr(actual.toFixed(2)) : ""
+        }" /></td>
+        <td class="num ${deltaClass}">${deltaText}</td>
+        <td class="num ${progClass}">${progText}</td>
+      `;
+      const inp = $("input", tr);
+      inp.addEventListener("change", () => {
+        const raw = inp.value.trim();
+        if (raw === "") {
+          state.planActuals[key] = null;
+        } else {
+          const n = Number(raw);
+          state.planActuals[key] = Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
+        }
+        persistPlan();
+        renderPlan();
+      });
+      tbody.appendChild(tr);
+    }
+    const status = $("#planStatus");
+    if (status) {
+      status.textContent =
+        `已填写 ${filled} / ${rows.length} 年实际完成 · 数据保存在本机 localStorage`;
+      status.className = "status-line";
+    }
+  }
+
   /* ---------- Totals ---------- */
   function usRowsValued() {
     return state.us.map((r) => {
@@ -729,6 +850,7 @@
     renderCrypto();
     renderCash();
     renderOverview();
+    renderPlan();
   }
 
   function escapeAttr(s) {

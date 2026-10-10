@@ -367,6 +367,34 @@
     }
     footer.page-foot strong { color: var(--muted); font-weight: 600; }
 
+
+    /* —— Ten-year plan —— */
+    .plan-note {
+      margin: 0 0 0.9rem;
+      padding: 0.7rem 0.85rem;
+      border-radius: 10px;
+      background: rgba(61,139,253,0.08);
+      border: 1px solid rgba(61,139,253,0.22);
+      color: #9ec1ff;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    .plan-note strong { color: #c5d9ff; font-weight: 600; }
+    table.data .delta-pos { color: var(--up); }
+    table.data .delta-neg { color: var(--down); }
+    table.data .delta-zero { color: var(--dim); }
+    table.data input.plan-actual {
+      max-width: 7.5rem;
+      margin-left: auto;
+      display: block;
+      text-align: right;
+    }
+    .plan-formula {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--dim);
+      margin: 0.15rem 0 0.85rem;
+    }
     .swatch {
       display: inline-block;
       width: 9px; height: 9px;
@@ -520,6 +548,30 @@
         <div class="row-tools">
           <button type="button" class="btn primary" id="btnAddCash">＋ 添加现金项</button>
         </div>
+      </section>
+
+
+      <!-- Ten-year investment plan -->
+      <section class="card" style="margin-bottom:1.25rem" id="tenYearPlan">
+        <h2>十年投资计划 <span class="badge">2026–2035</span></h2>
+        <p class="desc">规划轨迹与实际完成对照。单位：万元（万）。</p>
+        <p class="plan-formula">基准公式：2026 = 42；其后每年 = 上年 × 1.12 + 2（增长 12% + 定投 2 万）</p>
+        <div class="plan-note">
+          <strong>说明：</strong>「基准金额」仅为个人规划轨迹，用于进度对照，<strong>不构成投资建议、收益承诺或收益预测</strong>。「实际完成」由您自行填写，保存在本机 localStorage。
+        </div>
+        <table class="data" id="planTable">
+          <thead>
+            <tr>
+              <th>年份</th>
+              <th class="num">基准金额（万）</th>
+              <th class="num">实际完成（万）</th>
+              <th class="num">较基准差额（万）</th>
+              <th class="num">完成进度 %</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="status-line" id="planStatus"></p>
       </section>
 
       <footer class="page-foot">
