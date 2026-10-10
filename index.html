@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="资产配置总览 — 美股 / A股 / 数字货币 / 现金" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>资产配置看板 · Portfolio</title>
+  <script src="chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --bg-elev: #121212;
+      --bg-card: #161616;
+      --bg-card-hover: #1c1c1c;
+      --bg-input: #0f0f0f;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #f5f5f5;
+      --muted: #9a9a9a;
+      --dim: #6b6b6b;
+      --accent: #3d8bfd;
+      --accent-soft: rgba(61,139,253,0.15);
+      --accent-2: #7c5cff;
+      --up: #00c853;
+      --up-soft: rgba(0,200,83,0.12);
+      --down: #ff5252;
+      --down-soft: rgba(255,82,82,0.12);
+      --warn: #ffb300;
+      --radius: 14px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.45);
+      --font: "SF Pro Display", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+      --mono: "SF Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+      --c1: #3d8bfd;
+      --c2: #00c853;
+      --c3: #ffb300;
+      --c4: #7c5cff;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background:
+        radial-gradient(1100px 560px at 8% -12%, rgba(61,139,253,0.14), transparent 55%),
+        radial-gradient(900px 480px at 92% 0%, rgba(124,92,255,0.10), transparent 50%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: #8ab4ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .hidden { display: none !important; }
+
+    /* —— Gate —— */
+    #gate {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+    }
+    .gate-card {
+      width: min(420px, 100%);
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 2rem 1.75rem 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .gate-card h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .gate-card .sub {
+      margin: 0 0 1.25rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .gate-card .notice {
+      margin: 0 0 1.1rem;
+      padding: 0.75rem 0.85rem;
+      border-radius: 10px;
+      background: rgba(255,179,0,0.08);
+      border: 1px solid rgba(255,179,0,0.25);
+      color: #ffd54f;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .gate-card label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .gate-card input[type="password"] {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-input);
+      color: var(--text);
+      font-size: 1.05rem;
+      font-family: var(--mono);
+      letter-spacing: 0.2em;
+      outline: none;
+    }
+    .gate-card input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .gate-card .err {
+      min-height: 1.2rem;
+      margin: 0.55rem 0 0.85rem;
+      color: var(--down);
+      font-size: 0.82rem;
+    }
+    .gate-card button {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .gate-card button:hover { filter: brightness(1.08); }
+    .gate-card .foot {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--dim);
+      text-align: center;
+    }
+
+    /* —— App shell —— */
+    .wrap {
+      width: min(1120px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.5rem 0 3rem;
+    }
+    header.hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.35rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .brand p {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-elev);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn:hover { background: var(--bg-card-hover); border-color: rgba(255,255,255,0.22); }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-color: transparent;
+      color: #fff;
+    }
+    .btn.danger { color: #ff8a80; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .pill .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--up);
+      box-shadow: 0 0 8px var(--up);
+    }
+    .pill.warn .dot { background: var(--warn); box-shadow: 0 0 8px var(--warn); }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .kpi {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      transition: border-color .15s, transform .15s;
+    }
+    .kpi:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+    .kpi .label { font-size: 0.75rem; color: var(--muted); }
+    .kpi .value {
+      margin-top: 0.2rem;
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi .sub { font-size: 0.78rem; color: var(--dim); margin-top: 0.15rem; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 860px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.15rem 1.15rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .card h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.05rem;
+      font-weight: 650;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .card .desc {
+      margin: 0 0 0.9rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #9ec1ff;
+      border: 1px solid rgba(61,139,253,0.25);
+    }
+    .badge.example {
+      background: rgba(255,179,0,0.12);
+      color: #ffd54f;
+      border-color: rgba(255,179,0,0.28);
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 260px;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      font-variant-numeric: tabular-nums;
+    }
+    table.data th, table.data td {
+      padding: 0.55rem 0.45rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    table.data th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
+    table.data td.num, table.data th.num { text-align: right; }
+    table.data tr:last-child td { border-bottom: none; }
+    table.data tbody tr:hover td { background: rgba(255,255,255,0.02); }
+    table.data input {
+      width: 100%;
+      min-width: 4.5rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text);
+      font: inherit;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      outline: none;
+    }
+    table.data input:focus { border-color: var(--accent); }
+    table.data input.ticker { text-transform: uppercase; letter-spacing: 0.04em; }
+    table.data .actions { white-space: nowrap; }
+    table.data .icon-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 0.25rem 0.45rem;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    table.data .icon-btn:hover { color: var(--down); border-color: rgba(255,82,82,0.4); }
+    table.data .muted { color: var(--dim); font-size: 0.78rem; }
+    table.data .tag-ex {
+      display: inline-block;
+      margin-left: 0.35rem;
+      font-size: 0.65rem;
+      padding: 0.05rem 0.35rem;
+      border-radius: 4px;
+      background: rgba(255,179,0,0.12);
+      color: #ffd54f;
+    }
+    .row-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+      align-items: center;
+    }
+    .status-line {
+      font-size: 0.78rem;
+      color: var(--dim);
+      margin-top: 0.65rem;
+    }
+    .status-line.ok { color: var(--up); }
+    .status-line.bad { color: var(--down); }
+
+    footer.page-foot {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      color: var(--dim);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+    footer.page-foot strong { color: var(--muted); font-weight: 600; }
+
+    .swatch {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 3px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <!-- Passcode gate -->
+  <div id="gate">
+    <div class="gate-card">
+      <h1>资产配置看板</h1>
+      <p class="sub">请输入本地通行码以继续</p>
+      <div class="notice">
+        说明：GitHub Pages 无法提供真正的私有访问。本页仅为<strong>浏览器本地通行码</strong>门禁（非服务端鉴权、非私有托管）。知道通行码的人仍可查看页面内容；请勿存放高度敏感信息。
+      </div>
+      <label for="passcode">通行码</label>
+      <input id="passcode" type="password" inputmode="numeric" autocomplete="off" maxlength="32" placeholder="••••••••" />
+      <div class="err" id="gateErr"></div>
+      <button type="button" id="gateBtn">进入看板</button>
+      <p class="foot">解锁状态保存在 sessionStorage · 关闭标签后需重新输入</p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="app" class="hidden">
+    <div class="wrap">
+      <header class="hero">
+        <div class="brand">
+          <h1>资产配置看板</h1>
+          <p>总览 · 美股 · A股 · 数字货币 · 现金 · 数据保存在本机 localStorage</p>
+        </div>
+        <div class="hero-actions">
+          <span class="pill" id="livePill"><span class="dot"></span><span id="liveLabel">价格待刷新</span></span>
+          <button type="button" class="btn primary" id="btnRefresh">刷新价格</button>
+          <button type="button" class="btn" id="btnLock">锁定</button>
+        </div>
+      </header>
+
+      <section class="kpi-row" id="kpiRow">
+        <div class="kpi"><div class="label">总资产 (USD)</div><div class="value" id="kpiTotal">$0</div><div class="sub" id="kpiFx">汇率加载中…</div></div>
+        <div class="kpi"><div class="label">美股</div><div class="value" id="kpiUs">$0</div><div class="sub" id="kpiUsPct">—</div></div>
+        <div class="kpi"><div class="label">A股</div><div class="value" id="kpiCn">$0</div><div class="sub" id="kpiCnPct">—</div></div>
+        <div class="kpi"><div class="label">数字货币</div><div class="value" id="kpiCrypto">$0</div><div class="sub" id="kpiCryptoPct">—</div></div>
+        <div class="kpi"><div class="label">现金</div><div class="value" id="kpiCash">$0</div><div class="sub" id="kpiCashPct">—</div></div>
+      </section>
+
+      <!-- Table 1 Overview -->
+      <section class="grid-2">
+        <div class="card">
+          <h2>总览 <span class="badge">Table 1</span></h2>
+          <p class="desc">各大类市值与占总资产比例。下方环形图与表格联动。</p>
+          <div class="chart-wrap"><canvas id="allocChart"></canvas></div>
+        </div>
+        <div class="card">
+          <h2>分类汇总</h2>
+          <p class="desc">金额单位：美元 (USD)。合计随各表自动汇总。</p>
+          <table class="data" id="overviewTable">
+            <thead>
+              <tr><th>类别</th><th class="num">金额 (USD)</th><th class="num">占比</th></tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+              <tr><th>合计</th><th class="num" id="ovTotal">$0</th><th class="num">100%</th></tr>
+            </tfoot>
+          </table>
+          <p class="status-line" id="overviewStatus"></p>
+        </div>
+      </section>
+
+      <!-- Table 2 US -->
+      <section class="card" style="margin-bottom:1.25rem">
+        <h2>美股 <span class="badge">Table 2</span></h2>
+        <p class="desc">输入股票代码与股数，自动拉取近实时美元报价并计算市值。按仓位权重降序。</p>
+        <table class="data" id="usTable">
+          <thead>
+            <tr>
+              <th>代码</th>
+              <th class="num">股数</th>
+              <th class="num">单价 (USD)</th>
+              <th class="num">市值 (USD)</th>
+              <th class="num">权重</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row-tools">
+          <button type="button" class="btn primary" id="btnAddUs">＋ 添加持仓</button>
+          <span class="status-line" id="usStatus"></span>
+        </div>
+      </section>
+
+      <!-- Table 3 A-shares -->
+      <section class="card" style="margin-bottom:1.25rem">
+        <h2>A股 / 港股相关 <span class="badge">Table 3</span></h2>
+        <p class="desc">固定三项名称（非行情代码）。请填写<strong>人民币持仓金额</strong>，按当日 USD/CNY 汇率折算美元。按美元权重降序。</p>
+        <table class="data" id="cnTable">
+          <thead>
+            <tr>
+              <th>名称</th>
+              <th class="num">持仓金额 (CNY)</th>
+              <th class="num">折合 (USD)</th>
+              <th class="num">权重</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="status-line" id="cnStatus"></p>
+      </section>
+
+      <!-- Table 4 Crypto -->
+      <section class="card" style="margin-bottom:1.25rem">
+        <h2>数字货币 <span class="badge">Table 4</span></h2>
+        <p class="desc">输入比特币数量，自动拉取 BTC-USD 价格计算市值。可添加多行（至少保留 BTC）。</p>
+        <table class="data" id="cryptoTable">
+          <thead>
+            <tr>
+              <th>资产</th>
+              <th class="num">数量</th>
+              <th class="num">单价 (USD)</th>
+              <th class="num">市值 (USD)</th>
+              <th class="num">权重</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row-tools">
+          <button type="button" class="btn primary" id="btnAddCrypto">＋ 添加 BTC 行</button>
+          <span class="status-line" id="cryptoStatus"></span>
+        </div>
+      </section>
+
+      <!-- Table 5 Cash -->
+      <section class="card" style="margin-bottom:1.25rem">
+        <h2>现金 <span class="badge">Table 5</span></h2>
+        <p class="desc">直接输入美元现金余额。</p>
+        <table class="data" id="cashTable">
+          <thead>
+            <tr>
+              <th>项目</th>
+              <th class="num">金额 (USD)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="row-tools">
+          <button type="button" class="btn primary" id="btnAddCash">＋ 添加现金项</button>
+        </div>
+      </section>
+
+      <footer class="page-foot">
+        <p><strong>免责声明：</strong>本页仅供个人资产分布可视化，不构成任何投资建议、推荐或收益承诺。行情与汇率来自公开第三方接口，可能延迟或失败。</p>
+        <p><strong>隐私与访问：</strong>GitHub Pages 为公开静态托管，无法实现真正的私有访问。通行码校验仅在浏览器本地完成（sessionStorage），不是服务端鉴权。持仓数据保存在本机 localStorage，不会上传到服务器。</p>
+        <p><strong>价格来源：</strong>美股优先 Nasdaq 公开报价接口（经浏览器可访问的备用通道 / 本地 quotes.json 缓存）；BTC 使用 CoinGecko / Binance；汇率使用 Frankfurter / open.er-api。</p>
+      </footer>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

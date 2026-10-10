@@ -1,0 +1,32 @@
+{
+  "updatedAt": "2026-10-10T20:00:02.715963+08:00",
+  "usdCny": 6.6921,
+  "btcUsd": 82833,
+  "stocks": {
+    "AAPL": {
+      "symbol": "AAPL",
+      "name": "Apple Inc. Common Stock",
+      "price": 336.64,
+      "changePct": -1.11,
+      "asOf": "Oct 8, 2026",
+      "source": "nasdaq"
+    },
+    "TSLA": {
+      "symbol": "TSLA",
+      "name": "Tesla, Inc. Common Stock",
+      "price": 382.7,
+      "changePct": 2.05,
+      "asOf": "Oct 8, 2026",
+      "source": "nasdaq"
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation Common Stock",
+      "price": 535.07,
+      "changePct": 2.38,
+      "asOf": "Oct 8, 2026",
+      "source": "nasdaq"
+    }
+  },
+  "fxDate": "2026-10-09"
+}
