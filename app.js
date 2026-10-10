@@ -463,18 +463,36 @@
 
   function renderPlan() {
     if (!state.planActuals) state.planActuals = loadPlanActuals();
-    const rows = computeBenchmarks();
-    const tbody = $("#planTable tbody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
+    const cols = computeBenchmarks();
+    const headRow = $("#planHeadRow");
+    const benchRow = $("#planBenchRow");
+    const actualRow = $("#planActualRow");
+    const deltaRow = $("#planDeltaRow");
+    if (!headRow || !benchRow || !actualRow || !deltaRow) return;
+
+    // Preserve focus year across re-render
+    const active = document.activeElement;
+    const focusYear =
+      active && active.classList && active.classList.contains("plan-actual")
+        ? active.getAttribute("data-year")
+        : null;
+    const focusSel =
+      active && active.tagName === "INPUT"
+        ? { start: active.selectionStart, end: active.selectionEnd }
+        : null;
+
+    headRow.innerHTML = `<th class="plan-corner">指标 \\ 年份</th>`;
+    benchRow.innerHTML = `<td class="plan-label">基准计划（万）</td>`;
+    actualRow.innerHTML = `<td class="plan-label">实际完成（万）</td>`;
+    deltaRow.innerHTML = `<td class="plan-label">差额（万）</td>`;
+
     let filled = 0;
-    for (const { year, benchmark } of rows) {
+    for (const { year, benchmark } of cols) {
       const key = String(year);
       const actual = state.planActuals[key];
       const hasActual = actual != null && Number.isFinite(actual);
       if (hasActual) filled++;
       const delta = hasActual ? actual - benchmark : null;
-      const progress = hasActual && benchmark > 0 ? (actual / benchmark) * 100 : null;
       let deltaClass = "delta-zero";
       let deltaText = "—";
       if (delta != null) {
@@ -483,46 +501,63 @@
         const sign = delta > 0 ? "+" : "";
         deltaText = sign + fmtWan(delta);
       }
-      const progText =
-        progress == null
-          ? "—"
-          : progress.toLocaleString("zh-CN", {
-              minimumFractionDigits: 1,
-              maximumFractionDigits: 1,
-            }) + "%";
-      let progClass = "delta-zero";
-      if (progress != null) {
-        if (progress >= 100) progClass = "delta-pos";
-        else if (progress < 100) progClass = "delta-neg";
-      }
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${year}</td>
-        <td class="num">${fmtWan(benchmark)}</td>
-        <td class="num"><input class="plan-actual" data-year="${key}" type="number" min="0" step="0.01" placeholder="填写" value="${
-          hasActual ? escapeAttr(actual.toFixed(2)) : ""
-        }" /></td>
-        <td class="num ${deltaClass}">${deltaText}</td>
-        <td class="num ${progClass}">${progText}</td>
-      `;
-      const inp = $("input", tr);
+
+      const th = document.createElement("th");
+      th.textContent = String(year);
+      headRow.appendChild(th);
+
+      const tdB = document.createElement("td");
+      tdB.textContent = fmtWan(benchmark);
+      benchRow.appendChild(tdB);
+
+      const tdA = document.createElement("td");
+      const inp = document.createElement("input");
+      inp.className = "plan-actual";
+      inp.type = "number";
+      inp.min = "0";
+      inp.step = "0.01";
+      inp.placeholder = "填写";
+      inp.setAttribute("data-year", key);
+      inp.setAttribute("aria-label", `${year} 实际完成（万）`);
+      if (hasActual) inp.value = actual.toFixed(2);
       inp.addEventListener("change", () => {
         const raw = inp.value.trim();
         if (raw === "") {
           state.planActuals[key] = null;
         } else {
           const n = Number(raw);
-          state.planActuals[key] = Number.isFinite(n) ? Math.round(n * 100) / 100 : null;
+          state.planActuals[key] = Number.isFinite(n)
+            ? Math.round(n * 100) / 100
+            : null;
         }
         persistPlan();
         renderPlan();
       });
-      tbody.appendChild(tr);
+      tdA.appendChild(inp);
+      actualRow.appendChild(tdA);
+
+      const tdD = document.createElement("td");
+      tdD.className = deltaClass;
+      tdD.textContent = deltaText;
+      deltaRow.appendChild(tdD);
     }
+
+    if (focusYear) {
+      const again = $(`input.plan-actual[data-year="${focusYear}"]`);
+      if (again) {
+        again.focus();
+        if (focusSel && typeof again.setSelectionRange === "function") {
+          try {
+            again.setSelectionRange(focusSel.start, focusSel.end);
+          } catch (_) {}
+        }
+      }
+    }
+
     const status = $("#planStatus");
     if (status) {
       status.textContent =
-        `已填写 ${filled} / ${rows.length} 年实际完成 · 数据保存在本机 localStorage`;
+        `已填写 ${filled} / ${cols.length} 年实际完成 · 左右滑动查看全部年份 · 数据保存在本机 localStorage`;
       status.className = "status-line";
     }
   }

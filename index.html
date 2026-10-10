@@ -368,7 +368,7 @@
     footer.page-foot strong { color: var(--muted); font-weight: 600; }
 
 
-    /* —— Ten-year plan —— */
+    /* —— Ten-year plan (horizontal years) —— */
     .plan-note {
       margin: 0 0 0.9rem;
       padding: 0.7rem 0.85rem;
@@ -380,21 +380,84 @@
       line-height: 1.5;
     }
     .plan-note strong { color: #c5d9ff; font-weight: 600; }
-    table.data .delta-pos { color: var(--up); }
-    table.data .delta-neg { color: var(--down); }
-    table.data .delta-zero { color: var(--dim); }
-    table.data input.plan-actual {
-      max-width: 7.5rem;
+    .plan-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -0.15rem;
+      padding-bottom: 0.15rem;
+    }
+    table.plan-h {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+    table.plan-h th, table.plan-h td {
+      padding: 0.5rem 0.4rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      white-space: nowrap;
+      min-width: 4.6rem;
+    }
+    table.plan-h th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      background: var(--bg-card);
+    }
+    table.plan-h th.plan-corner,
+    table.plan-h td.plan-label {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--bg-card);
+      min-width: 7.2rem;
+      max-width: 8.5rem;
+      padding-right: 0.65rem;
+      box-shadow: 4px 0 8px rgba(0,0,0,0.18);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+    table.plan-h th.plan-corner { z-index: 3; }
+    table.plan-h td.plan-label { color: var(--text); font-size: 0.8rem; }
+    table.plan-h tr:last-child td { border-bottom: none; }
+    table.plan-h .delta-pos { color: var(--up); }
+    table.plan-h .delta-neg { color: var(--down); }
+    table.plan-h .delta-zero { color: var(--dim); }
+    table.plan-h input.plan-actual {
+      width: 4.4rem;
+      min-width: 4.4rem;
+      max-width: 5rem;
       margin-left: auto;
       display: block;
       text-align: right;
+      padding: 0.3rem 0.35rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text);
+      font: inherit;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      outline: none;
     }
+    table.plan-h input.plan-actual:focus { border-color: var(--accent); }
     .plan-formula {
       font-family: var(--mono);
       font-size: 0.78rem;
       color: var(--dim);
       margin: 0.15rem 0 0.85rem;
     }
+    /* keep delta helpers for other tables if any */
+    table.data .delta-pos { color: var(--up); }
+    table.data .delta-neg { color: var(--down); }
+    table.data .delta-zero { color: var(--dim); }
     .swatch {
       display: inline-block;
       width: 9px; height: 9px;
@@ -557,20 +620,28 @@
         <p class="desc">规划轨迹与实际完成对照。单位：万元（万）。</p>
         <p class="plan-formula">基准公式：2026 = 42；其后每年 = 上年 × 1.12 + 2（增长 12% + 定投 2 万）</p>
         <div class="plan-note">
-          <strong>说明：</strong>「基准金额」仅为个人规划轨迹，用于进度对照，<strong>不构成投资建议、收益承诺或收益预测</strong>。「实际完成」由您自行填写，保存在本机 localStorage。
+          <strong>说明：</strong>「基准计划」仅为个人规划轨迹，用于进度对照，<strong>不构成投资建议、收益承诺或收益预测</strong>。「实际完成」由您自行填写，保存在本机 localStorage。
         </div>
-        <table class="data" id="planTable">
-          <thead>
-            <tr>
-              <th>年份</th>
-              <th class="num">基准金额（万）</th>
-              <th class="num">实际完成（万）</th>
-              <th class="num">较基准差额（万）</th>
-              <th class="num">完成进度 %</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <div class="plan-scroll">
+          <table class="plan-h" id="planTable">
+            <thead>
+              <tr id="planHeadRow">
+                <th class="plan-corner">指标 \ 年份</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="planBenchRow">
+                <td class="plan-label">基准计划（万）</td>
+              </tr>
+              <tr id="planActualRow">
+                <td class="plan-label">实际完成（万）</td>
+              </tr>
+              <tr id="planDeltaRow">
+                <td class="plan-label">差额（万）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <p class="status-line" id="planStatus"></p>
       </section>
 
