@@ -1,7 +1,8 @@
 {
-  "updatedAt": "2026-10-10T20:00:02.715963+08:00",
+  "updatedAt": "2026-10-12T11:39:55.864913+08:00",
   "usdCny": 6.6921,
-  "btcUsd": 82833,
+  "fxDate": "2026-10-09",
+  "btcUsd": 83548.0,
   "stocks": {
     "AAPL": {
       "symbol": "AAPL",
@@ -26,7 +27,38 @@
       "changePct": 2.38,
       "asOf": "Oct 8, 2026",
       "source": "nasdaq"
+    },
+    "NVDA": {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation Common Stock",
+      "price": 229.28,
+      "changePct": -0.52,
+      "asOf": "Oct 8, 2026",
+      "source": "nasdaq"
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "name": "Amazon.com, Inc. Common Stock",
+      "price": 262.43,
+      "changePct": 3.29,
+      "asOf": "Oct 8, 2026",
+      "source": "nasdaq"
+    },
+    "GOOGL": {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc. Class A Common Stock",
+      "price": 351.66,
+      "changePct": 0.97,
+      "asOf": "Oct 8, 2026",
+      "source": "nasdaq"
+    },
+    "META": {
+      "symbol": "META",
+      "name": "Meta Platforms, Inc. Class A Common Stock",
+      "price": 718.67,
+      "changePct": -0.31,
+      "asOf": "Oct 8, 2026",
+      "source": "nasdaq"
     }
-  },
-  "fxDate": "2026-10-09"
+  }
 }
