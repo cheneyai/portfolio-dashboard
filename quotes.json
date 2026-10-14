@@ -1,63 +1,63 @@
 {
-  "updatedAt": "2026-10-12T11:39:55.864913+08:00",
-  "usdCny": 6.6921,
-  "fxDate": "2026-10-09",
-  "btcUsd": 83548.0,
+  "updatedAt": "2026-10-14T08:44:32.698110+08:00",
+  "usdCny": 6.6938,
+  "fxDate": "2026-10-13",
+  "btcUsd": 83593.0,
   "stocks": {
     "AAPL": {
       "symbol": "AAPL",
       "name": "Apple Inc. Common Stock",
-      "price": 336.64,
-      "changePct": -1.11,
-      "asOf": "Oct 8, 2026",
+      "price": 340.5,
+      "changePct": -0.23,
+      "asOf": "Oct 13, 2026 7:55 PM ET",
       "source": "nasdaq"
     },
     "TSLA": {
       "symbol": "TSLA",
       "name": "Tesla, Inc. Common Stock",
-      "price": 382.7,
-      "changePct": 2.05,
-      "asOf": "Oct 8, 2026",
+      "price": 374.8,
+      "changePct": -0.11,
+      "asOf": "Oct 13, 2026 7:59 PM ET",
       "source": "nasdaq"
     },
     "MSFT": {
       "symbol": "MSFT",
       "name": "Microsoft Corporation Common Stock",
-      "price": 535.07,
-      "changePct": 2.38,
-      "asOf": "Oct 8, 2026",
+      "price": 541.0326,
+      "changePct": -0.44,
+      "asOf": "Oct 13, 2026 7:59 PM ET",
       "source": "nasdaq"
     },
     "NVDA": {
       "symbol": "NVDA",
       "name": "NVIDIA Corporation Common Stock",
-      "price": 229.28,
-      "changePct": -0.52,
-      "asOf": "Oct 8, 2026",
+      "price": 228.9966,
+      "changePct": 0.21,
+      "asOf": "Oct 13, 2026 7:58 PM ET",
       "source": "nasdaq"
     },
     "AMZN": {
       "symbol": "AMZN",
       "name": "Amazon.com, Inc. Common Stock",
-      "price": 262.43,
-      "changePct": 3.29,
-      "asOf": "Oct 8, 2026",
+      "price": 257.8,
+      "changePct": -0.3,
+      "asOf": "Oct 13, 2026 7:56 PM ET",
       "source": "nasdaq"
     },
     "GOOGL": {
       "symbol": "GOOGL",
       "name": "Alphabet Inc. Class A Common Stock",
-      "price": 351.66,
-      "changePct": 0.97,
-      "asOf": "Oct 8, 2026",
+      "price": 354.2,
+      "changePct": 0.12,
+      "asOf": "Oct 13, 2026 7:53 PM ET",
       "source": "nasdaq"
     },
     "META": {
       "symbol": "META",
       "name": "Meta Platforms, Inc. Class A Common Stock",
-      "price": 718.67,
-      "changePct": -0.31,
-      "asOf": "Oct 8, 2026",
+      "price": 762.8,
+      "changePct": 0.04,
+      "asOf": "Oct 13, 2026 7:56 PM ET",
       "source": "nasdaq"
     }
   }
