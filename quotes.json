@@ -1,79 +1,79 @@
 {
-  "updatedAt": "2026-10-15T08:16:18.330892+08:00",
-  "usdCny": 6.6927,
-  "fxDate": "2026-10-14",
-  "btcUsd": 81738.0,
+  "updatedAt": "2026-10-16T07:52:24.666157+08:00",
+  "usdCny": 6.691,
+  "fxDate": "2026-10-15",
+  "btcUsd": 82130.0,
   "stocks": {
     "AAPL": {
       "symbol": "AAPL",
       "name": "Apple Inc. Common Stock",
-      "price": 344.98,
-      "changePct": 0.59,
-      "asOf": "Oct 14, 2026 7:58 PM ET",
+      "price": 340.71,
+      "changePct": -0.38,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     },
     "TSLA": {
       "symbol": "TSLA",
       "name": "Tesla, Inc. Common Stock",
-      "price": 363.77,
-      "changePct": -0.92,
-      "asOf": "Oct 14, 2026 7:58 PM ET",
+      "price": 362.1,
+      "changePct": -0.09,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     },
     "MSFT": {
       "symbol": "MSFT",
       "name": "Microsoft Corporation Common Stock",
-      "price": 531.0,
-      "changePct": -0.5,
-      "asOf": "Oct 14, 2026 7:56 PM ET",
+      "price": 536.5772,
+      "changePct": -0.53,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     },
     "NVDA": {
       "symbol": "NVDA",
       "name": "NVIDIA Corporation Common Stock",
-      "price": 217.9,
-      "changePct": -1.54,
-      "asOf": "Oct 14, 2026 7:59 PM ET",
+      "price": 216.7761,
+      "changePct": -0.21,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     },
     "AMZN": {
       "symbol": "AMZN",
       "name": "Amazon.com, Inc. Common Stock",
-      "price": 250.45,
-      "changePct": -1.43,
-      "asOf": "Oct 14, 2026 7:58 PM ET",
+      "price": 253.32,
+      "changePct": -0.57,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     },
     "GOOGL": {
       "symbol": "GOOGL",
       "name": "Alphabet Inc. Class A Common Stock",
-      "price": 344.51,
-      "changePct": -0.9,
-      "asOf": "Oct 14, 2026 7:42 PM ET",
+      "price": 348.1412,
+      "changePct": -0.31,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     },
     "META": {
       "symbol": "META",
       "name": "Meta Platforms, Inc. Class A Common Stock",
-      "price": 730.21,
-      "changePct": -0.99,
-      "asOf": "Oct 14, 2026 7:59 PM ET",
+      "price": 731.5,
+      "changePct": -0.71,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     },
     "QQQ": {
       "symbol": "QQQ",
       "name": "Invesco QQQ Trust, Series 1",
-      "price": 722.35,
-      "changePct": -0.91,
-      "asOf": "Oct 14, 2026 7:57 PM ET",
+      "price": 724.3299,
+      "changePct": -0.5,
+      "asOf": "Oct 15, 2026 7:51 PM ET",
       "source": "nasdaq"
     },
     "SPY": {
       "symbol": "SPY",
       "name": "State Street SPDR S&P 500 ETF Trust",
-      "price": 767.12,
-      "changePct": -0.33,
-      "asOf": "Oct 14, 2026 7:57 PM ET",
+      "price": 770.37,
+      "changePct": -0.18,
+      "asOf": "Oct 15, 2026 7:52 PM ET",
       "source": "nasdaq"
     }
   }
