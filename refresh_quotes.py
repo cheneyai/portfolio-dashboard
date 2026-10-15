@@ -43,8 +43,13 @@ def money(s: Any) -> float | None:
         return None
 
 
+def nasdaq_asset_class(symbol: str) -> str:
+    return "etf" if symbol.upper() in {"SPY", "QQQ"} else "stocks"
+
+
 def nasdaq_quote(symbol: str) -> dict:
-    url = f"https://api.nasdaq.com/api/quote/{symbol}/info?assetclass=stocks"
+    asset = nasdaq_asset_class(symbol)
+    url = f"https://api.nasdaq.com/api/quote/{symbol}/info?assetclass={asset}"
     data = http_get_json(
         url,
         extra_headers={"Origin": "https://www.nasdaq.com", "Referer": "https://www.nasdaq.com/"},
